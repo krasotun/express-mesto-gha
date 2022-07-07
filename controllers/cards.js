@@ -5,7 +5,7 @@ const postCard = (req, res) => {
   const owner = req.user._id;
   Card.create({ name, link, owner })
     .then((data) => {
-      res.status(200).res.send(data);
+      res.status(200).send(data);
     })
     .catch((error) => {
       res.status(500).send({ message: `Ошибка сервера ${error}` });
