@@ -12,6 +12,15 @@ const postCard = (req, res) => {
     });
 };
 
+const findCards = (req, res) => {
+  Card.find({})
+    .then((data) => {
+      res.status(200).send(data);
+    })
+    .catch((error) => {
+      res.status(500).send({ message: `Ошибка сервера ${error}` });
+    });
+};
 module.exports = {
-  postCard,
+  postCard, findCards,
 };
