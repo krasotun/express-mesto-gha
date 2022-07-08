@@ -21,6 +21,17 @@ const findCards = (req, res) => {
       res.status(500).send({ message: `Ошибка сервера ${error}` });
     });
 };
+
+const deleteCard = (req, res) => {
+  const cardId = req.params.id;
+  Card.findByIdAndRemove(cardId)
+    .then((data) => {
+      res.status(200).send(data);
+    })
+    .catch((error) => {
+      res.status(500).send({ message: `Ошибка сервера ${error}` });
+    });
+};
 module.exports = {
-  postCard, findCards,
+  postCard, findCards, deleteCard,
 };
