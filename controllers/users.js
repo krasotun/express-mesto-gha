@@ -1,7 +1,5 @@
 const User = require('../models/user');
 
-// PATCH / users / me / avatar — обновляет аватар
-
 const updateUserInfo = (req, res) => {
   const { name, about } = req.body;
   const userId = req.user._id;
@@ -32,6 +30,9 @@ const createUser = (req, res) => {
       res.status(200).send(data);
     })
     .catch((error) => {
+      if (error.name === 'ValidationError') {
+        res.status(400).send({ message: 'Данные не прошли валидацию на сервере' });
+      }
       res.status(500).send({ message: `Ошибка сервера ${error}` });
     });
 };
