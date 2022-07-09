@@ -11,12 +11,29 @@ const postCard = (req, res) => {
       res.status(500).send({ message: `Ошибка сервера ${error}` });
     });
 };
-const findCards = (req, res) => {
-  Card.find({})
-    .then((data) => {
-      res.status(200).send(data);
+const deleteCard = (req, res) => {
+  const cardId = req.params.id;
+  Card.findByIdAndRemove(cardId)
+    .then((card) => {
+      res.status(200).send(card);
     })
     .catch((error) => {
+      if (error.name === 'CastError') {
+        res.status(404).send({ message: `Карточка с id:${cardId} не найдена` });
+      }
+      res.status(500).send({ message: `Ошибка сервера ${error}` });
+    });
+};
+
+const findCards = (req, res) => {
+  Card.find({})
+    .then((cards) => {
+      res.status(200).send(cards);
+    })
+    .catch((error) => {
+      if (error.name === 'CastName') {
+        res.status(404).send({ message: 'Карточки не созданы' });
+      }
       res.status(500).send({ message: `Ошибка сервера ${error}` });
     });
 };
@@ -43,16 +60,6 @@ const removeLike = (req, res) => {
     });
 };
 
-const deleteCard = (req, res) => {
-  const cardId = req.params.id;
-  Card.findByIdAndRemove(cardId)
-    .then((data) => {
-      res.status(200).send(data);
-    })
-    .catch((error) => {
-      res.status(500).send({ message: `Ошибка сервера ${error}` });
-    });
-};
 module.exports = {
   postCard, findCards, deleteCard, addLike, removeLike,
 };
