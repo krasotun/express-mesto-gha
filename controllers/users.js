@@ -32,6 +32,7 @@ const createUser = (req, res) => {
     .catch((error) => {
       if (error.name === 'ValidationError') {
         res.status(400).send({ message: 'Данные не прошли валидацию на сервере' });
+        return;
       }
       res.status(500).send({ message: `Ошибка сервера ${error}` });
     });
@@ -43,6 +44,10 @@ const getUserById = (req, res) => {
       res.status(200).send(data);
     })
     .catch((error) => {
+      if (error.name === 'CastError') {
+        res.status(404).send({ message: `Пользователь с id:${userId} не найден ` });
+        return;
+      }
       res.status(500).send({ message: `Ошибка сервера ${error}` });
     });
 };
