@@ -16,7 +16,7 @@ app.listen(PORT, () => {
 });
 app.use((req, res, next) => {
   req.user = {
-    // _id: '62c5f0946261a6385a341bab',
+    // _id: '62c5f0946261a6385a341bab', дом
     _id: '62c95ea46c81fab3320314ba',
   };
   next();
