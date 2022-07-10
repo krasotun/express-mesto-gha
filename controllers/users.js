@@ -10,6 +10,7 @@ const updateUserInfo = (req, res) => {
     .catch((error) => {
       if (error.name === 'ValidationError') {
         res.status(400).send({ message: 'Данные не прошли валидацию на сервере' });
+        return;
       }
       res.status(500).send({ message: `Ошибка сервера ${error}` });
     });
@@ -24,6 +25,7 @@ const updateUserAvatar = (req, res) => {
     .catch((error) => {
       if (error.name === 'ValidationError') {
         res.status(400).send({ message: 'Данные не прошли валидацию на сервере' });
+        return;
       }
       res.status(500).send({ message: `Ошибка сервера ${error}` });
     });
@@ -68,6 +70,10 @@ const getUsers = (req, res) => {
       res.status(200).send(data);
     })
     .catch((error) => {
+      if (error.name === 'CastError') {
+        res.status(404).send({ message: 'Пользователи  не созданы' });
+        return;
+      }
       res.status(500).send({ message: `Ошибка сервера ${error}` });
     });
 };

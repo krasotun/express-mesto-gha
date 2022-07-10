@@ -24,6 +24,7 @@ const deleteCard = (req, res) => {
     .catch((error) => {
       if (error.name === 'CastError') {
         res.status(404).send({ message: `Карточка с id:${cardId} не найдена` });
+        return;
       }
       res.status(500).send({ message: `Ошибка сервера ${error}` });
     });
@@ -37,6 +38,7 @@ const findCards = (req, res) => {
     .catch((error) => {
       if (error.name === 'CastError') {
         res.status(404).send({ message: 'Карточки не созданы' });
+        return;
       }
       res.status(500).send({ message: `Ошибка сервера ${error}` });
     });
@@ -51,6 +53,7 @@ const addLike = (req, res) => {
     .catch((error) => {
       if (error.name === 'CastError') {
         res.status(404).send({ message: 'Карточка не найдена' });
+        return;
       }
       res.status(500).send({ message: `Ошибка сервера ${error}` });
     });
@@ -65,6 +68,7 @@ const removeLike = (req, res) => {
     .catch((error) => {
       if (error.name === 'CastError') {
         res.status(404).send({ message: 'Карточка не найдена' });
+        return;
       }
       res.status(500).send({ message: `Ошибка сервера ${error}` });
     });
