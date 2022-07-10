@@ -8,6 +8,9 @@ const updateUserInfo = (req, res) => {
       res.status(200).send(data);
     })
     .catch((error) => {
+      if (error.name === 'ValidationError') {
+        res.status(400).send({ message: 'Данные не прошли валидацию на сервере' });
+      }
       res.status(500).send({ message: `Ошибка сервера ${error}` });
     });
 };
@@ -19,6 +22,9 @@ const updateUserAvatar = (req, res) => {
       res.status(200).send(data);
     })
     .catch((error) => {
+      if (error.name === 'ValidationError') {
+        res.status(400).send({ message: 'Данные не прошли валидацию на сервере' });
+      }
       res.status(500).send({ message: `Ошибка сервера ${error}` });
     });
 };
