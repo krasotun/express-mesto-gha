@@ -3,7 +3,7 @@ const User = require('../models/user');
 const updateUserInfo = (req, res) => {
   const { name, about } = req.body;
   const userId = req.user._id;
-  User.findByIdAndUpdate(userId, { name, about })
+  User.findByIdAndUpdate(userId, { name, about }, { new: true })
     .then((data) => {
       res.status(200).send(data);
     })
