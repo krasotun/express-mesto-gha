@@ -49,6 +49,9 @@ const addLike = (req, res) => {
       res.status(200).send(data);
     })
     .catch((error) => {
+      if (error.name === 'CastName') {
+        res.status(404).send({ message: 'Карточка не найдена' });
+      }
       res.status(500).send({ message: `Ошибка сервера ${error}` });
     });
 };
@@ -60,6 +63,9 @@ const removeLike = (req, res) => {
       res.status(200).send(data);
     })
     .catch((error) => {
+      if (error.name === 'CastName') {
+        res.status(404).send({ message: 'Карточка не найдена' });
+      }
       res.status(500).send({ message: `Ошибка сервера ${error}` });
     });
 };
