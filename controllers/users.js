@@ -32,8 +32,12 @@ const updateUserAvatar = (req, res) => {
 };
 
 const createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
+  const {
+    email, password, name, about, avatar,
+  } = req.body;
+  User.create({
+    email, password, name, about, avatar,
+  })
     .then((data) => {
       res.status(200).send(data);
     })
