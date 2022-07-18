@@ -1,4 +1,20 @@
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+
+const login = (req, res) => {
+  const { email, password } = req.body;
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+      res.status(200).send({ token });
+    })
+    .catch((err) => {
+      res
+        .status(401)
+        .send({ message: err.message });
+    });
+};
 
 const updateUserInfo = (req, res) => {
   const { name, about } = req.body;
@@ -33,11 +49,12 @@ const updateUserAvatar = (req, res) => {
 
 const createUser = (req, res) => {
   const {
-    email, password, name, about, avatar,
+    email, name, about, avatar,
   } = req.body;
-  User.create({
-    email, password, name, about, avatar,
-  })
+  bcrypt.hash(req.body.password, 10)
+    .then((hash) => User.create({
+      email, password: hash, name, about, avatar,
+    }))
     .then((data) => {
       res.status(200).send(data);
     })
@@ -83,7 +100,5 @@ const getUsers = (req, res) => {
 };
 
 module.exports = {
-  createUser, getUserById, getUsers, updateUserInfo, updateUserAvatar,
+  createUser, getUserById, getUsers, updateUserInfo, updateUserAvatar, login,
 };
-
-// test
