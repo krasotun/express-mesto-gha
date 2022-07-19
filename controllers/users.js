@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
 const login = (req, res) => {
+  console.log(req.body);
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
@@ -15,7 +16,6 @@ const login = (req, res) => {
         .send({ message: err.message });
     });
 };
-
 const updateUserInfo = (req, res) => {
   const { name, about } = req.body;
   const userId = req.user._id;
