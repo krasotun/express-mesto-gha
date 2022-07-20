@@ -2,8 +2,18 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
+const getCurrentUser = (req, res) => {
+  const userId = req.user._id;
+  return User.findById(userId)
+    .then((user) => {
+      res.status(200).send(user);
+    })
+    .catch((err) => {
+      res.status(401).send({ message: err.message });
+    });
+};
+
 const login = (req, res) => {
-  console.log(req.body);
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
@@ -11,9 +21,7 @@ const login = (req, res) => {
       res.status(200).send({ token });
     })
     .catch((err) => {
-      res
-        .status(401)
-        .send({ message: err.message });
+      res.status(401).send({ message: err.message });
     });
 };
 const updateUserInfo = (req, res) => {
@@ -100,5 +108,5 @@ const getUsers = (req, res) => {
 };
 
 module.exports = {
-  createUser, getUserById, getUsers, updateUserInfo, updateUserAvatar, login,
+  createUser, getUserById, getUsers, updateUserInfo, updateUserAvatar, login, getCurrentUser,
 };
