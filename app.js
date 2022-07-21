@@ -25,3 +25,9 @@ app.post('/signup', createUser);
 app.use('/', auth, usersRouter);
 app.use('/', auth, cardsRouter);
 app.all('*', errorRouter);
+
+app.use((err, req, res, next) => {
+  const { statusCode = 500, message } = err;
+  res.status(statusCode).send({ message: statusCode === 500 ? 'На сервере произошла ошибка' : message });
+  next();
+});

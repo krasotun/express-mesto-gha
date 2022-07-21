@@ -1,5 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const BadRequestError = require('../errors/bad-request-err');
+const NotFoundError = require('../errors/not-found-err');
 const User = require('../models/user');
 
 const getCurrentUser = (req, res) => {
@@ -74,23 +76,24 @@ const createUser = (req, res) => {
       res.status(500).send({ message: `Ошибка сервера ${error}` });
     });
 };
-const getUserById = (req, res) => {
+const getUserById = (req, res, next) => {
   const userId = req.params.id;
   User.findById(userId)
     .then((data) => {
       if (!data) {
-        res.status(404).send({ message: `Пользователь с указанным id:${userId} не найден` });
-        return;
+        console.log('No data found');
+        throw new NotFoundError('Нет пользователя с таким id');
       }
       res.status(200).send(data);
     })
     .catch((error) => {
+      console.log('Before', error);
       if (error.name === 'CastError') {
-        res.status(400).send({ message: `Неверно указан id:${userId}  ` });
-        return;
+        throw new BadRequestError('Неверно указан id');
       }
-      res.status(500).send({ message: `Ошибка сервера ${error}` });
-    });
+      console.log('after', error);
+    })
+    .catch(next);
 };
 
 const getUsers = (req, res) => {
