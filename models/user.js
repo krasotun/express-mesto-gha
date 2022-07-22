@@ -3,16 +3,14 @@ const validator = require('validator');
 const bcrypt = require('bcryptjs');
 
 // {
-//   "email": "krasotunka@test.ru",
+//   "email": "krasotun@krasotun.ru",
 //     "password": "123456"
 // }
 
 // {
-//   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQi
-// OiI2MmQ1OTkzOWExY2RiZWEyNjNmYjZmYWYiLCJpYXQiOjE2NTgxNzYyNzB9
-// .R6DqXYaRKpPhMit7M8JYiBFnS04rFu32h43o0fZAl3k"
+//   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MmRhZjY4MjA4MTBiNmZmYWYxN2E4ZGMiLC
+// JpYXQiOjE2NTg1MTczMzksImV4cCI6MTY1OTEyMjEzOX0.291cZbcz_65z7nOimJuHuU1F2vFwuuYPpBYGDNTkKbE"
 // }
-// 62c7465970e2f50c0e0ea66b
 const userSchema = new mongoose.Schema({
   email: {
     type: String,
@@ -48,9 +46,10 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-userSchema.statics.findUserByCredentials = function (email, password) {
-  return this.findOne({ email }).select(+'password')
+userSchema.statics.findUserByCredentials = function func(email, password) {
+  return this.findOne({ email }).select('+password')
     .then((user) => {
+      console.log(user);
       if (!user) {
         return Promise.reject(new Error('Неправильные почта или пароль'));
       }
