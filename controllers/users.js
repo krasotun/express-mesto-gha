@@ -2,31 +2,34 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const BadRequestError = require('../errors/bad-request-err');
 const NotFoundError = require('../errors/not-found-err');
+const AuthError = require('../errors/auth-error');
 const User = require('../models/user');
 
-const getCurrentUser = (req, res) => {
+const getCurrentUser = (req, res, next) => {
   const userId = req.user._id;
   return User.findById(userId)
     .then((user) => {
       res.status(200).send(user);
     })
-    .catch((err) => {
-      res.status(401).send({ message: err.message });
-    });
+    .catch((error) => {
+      throw new AuthError(error.message);
+    })
+    .catch(next);
 };
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
       res.status(200).send({ token });
     })
-    .catch((err) => {
-      res.status(401).send({ message: err.message });
-    });
+    .catch((error) => {
+      throw new AuthError(error.message);
+    })
+    .catch(next);
 };
-const updateUserInfo = (req, res) => {
+const updateUserInfo = (req, res, next) => {
   const { name, about } = req.body;
   const userId = req.user._id;
   User.findOneAndUpdate({ id: userId }, { name, about }, { new: true, runValidators: true })
@@ -35,13 +38,13 @@ const updateUserInfo = (req, res) => {
     })
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        res.status(400).send({ message: 'Данные не прошли валидацию на сервере' });
-        return;
+        throw new BadRequestError('Данные не прошли валидацию на сервере');
       }
-      res.status(500).send({ message: `Ошибка сервера ${error}` });
-    });
+      next(error);
+    })
+    .catch(next);
 };
-const updateUserAvatar = (req, res) => {
+const updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
   const userId = req.user._id;
   User.findOneAndUpdate({ id: userId }, { avatar }, { new: true, runValidators: true })
@@ -50,14 +53,14 @@ const updateUserAvatar = (req, res) => {
     })
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        res.status(400).send({ message: 'Данные не прошли валидацию на сервере' });
-        return;
+        throw new BadRequestError('Данные не прошли валидацию на сервере');
       }
-      res.status(500).send({ message: `Ошибка сервера ${error}` });
-    });
+      next(error);
+    })
+    .catch(next);
 };
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const {
     email, name, about, avatar,
   } = req.body;
@@ -70,44 +73,42 @@ const createUser = (req, res) => {
     })
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        res.status(400).send({ message: 'Данные не прошли валидацию на сервере' });
-        return;
+        throw new BadRequestError('Данные не прошли валидацию на сервере');
       }
-      res.status(500).send({ message: `Ошибка сервера ${error}` });
-    });
+      next(error);
+    })
+    .catch(next);
 };
 const getUserById = (req, res, next) => {
   const userId = req.params.id;
   User.findById(userId)
     .then((data) => {
       if (!data) {
-        console.log('No data found');
         throw new NotFoundError('Нет пользователя с таким id');
       }
       res.status(200).send(data);
     })
     .catch((error) => {
-      console.log('Before', error);
       if (error.name === 'CastError') {
         throw new BadRequestError('Неверно указан id');
       }
-      console.log('after', error);
+      next(error);
     })
     .catch(next);
 };
 
-const getUsers = (req, res) => {
+const getUsers = (req, res, next) => {
   User.find({})
     .then((data) => {
       res.status(200).send(data);
     })
     .catch((error) => {
       if (error.name === 'CastError') {
-        res.status(404).send({ message: 'Пользователи  не созданы' });
-        return;
+        throw new NotFoundError('Пользователи  не созданы');
       }
-      res.status(500).send({ message: `Ошибка сервера ${error}` });
-    });
+      next(error);
+    })
+    .catch(next);
 };
 
 module.exports = {
