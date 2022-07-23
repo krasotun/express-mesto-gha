@@ -1,5 +1,6 @@
-const BadRequestError = require('../errors/bad-request-err');
-const NotFoundError = require('../errors/not-found-err');
+const BadRequestError = require('../errors/bad-request-error');
+const NotFoundError = require('../errors/not-found-error');
+const AccessError = require('../errors/access-error');
 const Card = require('../models/card');
 
 const postCard = (req, res, next) => {
@@ -19,18 +20,21 @@ const postCard = (req, res, next) => {
 };
 const deleteCard = (req, res, next) => {
   const cardId = req.params.id;
-  Card.findByIdAndRemove(cardId)
-    .then((data) => {
-      if (!data) {
+  const id = req.user._id;
+  Card.findById(cardId)
+    .then((card) => {
+      if (!card) {
         throw new NotFoundError(`Карточка с указанным id: ${cardId} не найдена`);
       }
-      res.status(200).send(data);
-    })
-    .catch((error) => {
-      if (error.name === 'CastError') {
-        throw new BadRequestError(`Карточка с id: ${cardId} не найдена`);
+      if (card.owner.toString() !== id) {
+        throw new AccessError('Недостаточно прав для удаления карточки');
+      } else {
+        Card.findByIdAndRemove(cardId)
+          .then((data) => {
+            res.status(200).send(data);
+          })
+          .catch(next);
       }
-      next(error);
     })
     .catch(next);
 };
