@@ -1,6 +1,8 @@
+const BadRequestError = require('../errors/bad-request-err');
+const NotFoundError = require('../errors/not-found-err');
 const Card = require('../models/card');
 
-const postCard = (req, res) => {
+const postCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
   Card.create({ name, link, owner })
@@ -9,81 +11,78 @@ const postCard = (req, res) => {
     })
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        res.status(400).send({ message: 'Данные не прошли валидацию на сервере' });
-        return;
+        throw new BadRequestError('Данные не прошли валидацию на сервере');
       }
-      res.status(500).send({ message: `Ошибка сервера ${error}` });
-    });
+      next(error);
+    })
+    .catch(next);
 };
-const deleteCard = (req, res) => {
+const deleteCard = (req, res, next) => {
   const cardId = req.params.id;
   Card.findByIdAndRemove(cardId)
     .then((data) => {
       if (!data) {
-        res.status(404).send({ message: `Карточка с указанным id:${cardId} не найдена` });
-        return;
+        throw new NotFoundError(`Карточка с указанным id: ${cardId} не найдена`);
       }
       res.status(200).send(data);
     })
     .catch((error) => {
       if (error.name === 'CastError') {
-        res.status(400).send({ message: `Карточка с id:${cardId} не найдена` });
-        return;
+        throw new BadRequestError(`Карточка с id: ${cardId} не найдена`);
       }
-      res.status(500).send({ message: `Ошибка сервера ${error}` });
-    });
+      next(error);
+    })
+    .catch(next);
 };
 
-const findCards = (req, res) => {
+const findCards = (req, res, next) => {
   Card.find({})
     .then((cards) => {
       res.status(200).send(cards);
     })
     .catch((error) => {
       if (error.name === 'CastError') {
-        res.status(404).send({ message: 'Карточки не созданы' });
-        return;
+        throw new NotFoundError('Карточки не созданы');
       }
-      res.status(500).send({ message: `Ошибка сервера ${error}` });
-    });
+      next(error);
+    })
+    .catch(next);
 };
 
-const addLike = (req, res) => {
+const addLike = (req, res, next) => {
   const cardId = req.params.id;
   Card.findByIdAndUpdate(cardId, { $addToSet: { likes: req.user._id } }, { new: true })
     .then((data) => {
       if (!data) {
-        res.status(404).send({ message: `Карточка с указанным id:${cardId} не найдена` });
-        return;
+        throw new NotFoundError(`Карточка с указанным id:${cardId} не найдена`);
       }
       res.status(200).send(data);
     })
     .catch((error) => {
       if (error.name === 'CastError') {
-        res.status(400).send({ message: 'Карточка не найдена' });
-        return;
+        throw new BadRequestError('Карточка не найдена');
       }
-      res.status(500).send({ message: `Ошибка сервера ${error}` });
-    });
+      next(error);
+    })
+    .catch(next);
 };
 
-const removeLike = (req, res) => {
+const removeLike = (req, res, next) => {
   const cardId = req.params.id;
   Card.findByIdAndUpdate(cardId, { $pull: { likes: req.user._id } }, { new: true })
     .then((data) => {
       if (!data) {
-        res.status(404).send({ message: `Карточка с указанным id:${cardId} не найдена` });
-        return;
+        throw new NotFoundError(`Карточка с указанным id:${cardId} не найдена`);
       }
       res.status(200).send(data);
     })
     .catch((error) => {
       if (error.name === 'CastError') {
-        res.status(400).send({ message: 'Карточка не найдена' });
-        return;
+        throw new BadRequestError('Карточка не найдена');
       }
-      res.status(500).send({ message: `Ошибка сервера ${error}` });
-    });
+      next(error);
+    })
+    .catch(next);
 };
 
 module.exports = {
