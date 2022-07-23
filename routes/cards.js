@@ -16,8 +16,33 @@ cardsRouter.post(
   }),
   postCard,
 );
-cardsRouter.delete('/cards/:id', deleteCard);
-cardsRouter.put('/cards/:id/likes', addLike);
-cardsRouter.delete('/cards/:id/likes', removeLike);
+cardsRouter.delete(
+  '/cards/:id',
+  celebrate({
+    body: Joi.object().keys({
+      id: Joi.string().required().hex().length(24),
+    }),
+  }),
+  deleteCard,
+);
+cardsRouter.put(
+  '/cards/:id/likes',
+  celebrate({
+    body: Joi.object().keys({
+      id: Joi.string().required().hex().length(24),
+    }),
+  }),
+  addLike,
+);
+
+cardsRouter.delete(
+  '/cards/:id/likes',
+  celebrate({
+    body: Joi.object().keys({
+      id: Joi.string().required().hex().length(24),
+    }),
+  }),
+  removeLike,
+);
 
 module.exports = cardsRouter;
