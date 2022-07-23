@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const BadRequestError = require('../errors/bad-request-error');
 const NotFoundError = require('../errors/not-found-error');
 const AuthError = require('../errors/auth-error');
+const DuplicateDataError = require('../errors/duplicate-data-error');
 const User = require('../models/user');
 
 const getCurrentUser = (req, res, next) => {
@@ -74,6 +75,8 @@ const createUser = (req, res, next) => {
     .catch((error) => {
       if (error.name === 'ValidationError') {
         throw new BadRequestError('Данные не прошли валидацию на сервере');
+      } else if (error.code === 11000) {
+        throw new DuplicateDataError('Указанный email уже есть в базе данных');
       }
       next(error);
     })
