@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const { errors } = require('celebrate');
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
 const errorRouter = require('./routes/error');
@@ -25,6 +26,8 @@ app.post('/signup', createUser);
 app.use('/', auth, usersRouter);
 app.use('/', auth, cardsRouter);
 app.all('*', errorRouter);
+
+app.use(errors);
 
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
