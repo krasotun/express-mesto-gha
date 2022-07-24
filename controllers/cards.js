@@ -33,10 +33,15 @@ const deleteCard = (req, res, next) => {
           .then((data) => {
             res.status(200).send(data);
           })
+          .catch((error) => {
+            if (error.name === 'CastError') {
+              throw new BadRequestError(`Карточка с id:${cardId} не найдена`);
+            }
+            next(error);
+          })
           .catch(next);
       }
-    })
-    .catch(next);
+    });
 };
 
 const findCards = (req, res, next) => {

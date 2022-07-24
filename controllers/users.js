@@ -2,7 +2,6 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const BadRequestError = require('../errors/bad-request-error');
 const NotFoundError = require('../errors/not-found-error');
-const AuthError = require('../errors/auth-error');
 const DuplicateDataError = require('../errors/duplicate-data-error');
 const User = require('../models/user');
 
@@ -11,9 +10,6 @@ const getCurrentUser = (req, res, next) => {
   return User.findById(userId)
     .then((user) => {
       res.status(200).send(user);
-    })
-    .catch((error) => {
-      throw new AuthError(error.message);
     })
     .catch(next);
 };
@@ -24,9 +20,6 @@ const login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
       res.status(200).send({ token });
-    })
-    .catch((error) => {
-      throw new AuthError(error.message);
     })
     .catch(next);
 };
