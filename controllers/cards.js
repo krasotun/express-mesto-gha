@@ -24,7 +24,7 @@ const deleteCard = (req, res, next) => {
   Card.findById(cardId)
     .then((card) => {
       if (!card) {
-        throw new NotFoundError(`Карточка с указанным id: ${cardId} не найдена`);
+        throw new NotFoundError(`Карточка  с указанным id: ${cardId} не найдена`);
       }
       if (card.owner.toString() !== id) {
         throw new AccessError('Недостаточно прав для удаления карточки');
@@ -41,7 +41,8 @@ const deleteCard = (req, res, next) => {
           })
           .catch(next);
       }
-    });
+    })
+    .catch(next);
 };
 
 const findCards = (req, res, next) => {
