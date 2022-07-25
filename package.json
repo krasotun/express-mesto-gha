@@ -4,7 +4,7 @@
   "description": "# Проект Mesto фронтенд + бэкенд",
   "main": "app.js",
   "scripts": {
-    "lint": "eslint --fix",
+    "lint": "npx eslint ** --ignore-path .eslintignore",
     "start": "node app.js",
     "dev": "nodemon app.js"
   },
